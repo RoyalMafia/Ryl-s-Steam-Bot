@@ -22,3 +22,9 @@ When you run the script you may be asked for a Steam Guard Authentication code.
 2 !chatroom - Creates a chat room & invites / Invites (If a chat room already exists) to exist chat room
 3 !invchat - Invites you to a chat room if one exists
 ```
+## Current Features:
+```bash
+1 Can create chat rooms
+2 Can invite users who ask to be invited to the existing chat room
+3 Has an autoresponse feature if the user doesn't specify an existing command using cleverbot.io
+```
