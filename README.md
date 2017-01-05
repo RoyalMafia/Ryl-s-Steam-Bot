@@ -4,7 +4,7 @@ A simple bot I created.
 ## Required
 ```bash
 1 Node.js
-2 Cleverbot API User & Key (https://cleverbot.io/)
+2 Cleverbot API User & Key (https://cleverbot.io/) - Not required, but the auto response won't work without it.
 ```
 
 ## How to install:
