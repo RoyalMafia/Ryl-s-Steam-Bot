@@ -16,6 +16,11 @@ var cleverbot = require( 'cleverbot.io' );
 var client         = new SteamUser();
 var botChatID      = null;
 var botChatAdminID = null;
+var readline = require('readline');
+var rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
 /*
 
@@ -107,10 +112,12 @@ cmdList.invChat = [ "!invchat", "Invites you to a chat room if one exists.", fun
 
 */
 
-steambot = new cleverbot( "XcalmM9U7LeGrJBs", "xmnthCP1N9yW7jdlVPD3leZgxc8DhmyK" );
-steambot.create(function (err, session) {
-	console.log( "SteamBot started." )
-});
+function createCleverBot( usr, key ) {
+	steambot = new cleverbot( usr, key );
+	steambot.create(function (err, session) {
+		console.log( "SteamBot started." )
+	});
+};
 
 /*
 
@@ -126,6 +133,14 @@ client.logOn({
 client.on('loggedOn', () => {
     client.setPersona(SteamUser.Steam.EPersonaState.Online, "Ryl's Bot");
     console.log("Logged into Steam account.");
+
+    rl.question("Cleverbot Username: ", function(usr) {
+	  	rl.question("Cleverbot API Key: ", function(key) {
+	  		createCleverBot( usr, key );
+			rl.close();
+		});
+
+	});
 });
 
 // Friend Chat
@@ -134,11 +149,13 @@ client.on('friendMessage', function(steamID, message) {
     if( findCmd( message ) ) {
     	cmdList[getCmd( message )][2]( steamID );
     }else{
-    	steambot.ask( message , function (err, response) {
-    		console.log( "Responded: "+response )
-		  	client.chatMessage( steamID, response )
-		});
-    }
+    	if( typeof steambot != 'undefined' ) {
+	    	steambot.ask( message , function (err, response) {
+	    		console.log( "Responded: "+response )
+			  	client.chatMessage( steamID, response )
+			});
+	    };
+    };
 });
 
 // Room Functions
