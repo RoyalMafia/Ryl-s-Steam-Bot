@@ -52,15 +52,6 @@ function getCmd( cmd ) {
 	};
 };
 
-function idToName( event, id ) {
-	event.getPersonas([id], function(personas) {
-		var persona = personas[id];
-		var name = persona ? persona.player_name : ("[" + id + "]");
-
-		return name;
-	});
-};
-
 /*
 
 	Commands
@@ -119,6 +110,20 @@ function createCleverBot( usr, key ) {
 	});
 };
 
+function cleverBotResp( steamID, message ) {
+	if( typeof steambot != 'undefined' ) {
+    	steambot.ask( message , function (err, response) {
+    		if( response != 'Error, the reference "" does not exist' ) {
+    			console.log( "Cleverbot Respsonse: "+response )
+		  		client.chatMessage( steamID, response )
+    		}else{
+    			console.log( "Cleverbot had a fit." )
+    			client.chatMessage( steamID, "Cleverbot just had a fit." )
+    		};
+		});
+    };
+};
+
 /*
 
 	SteamBot Functions
@@ -145,33 +150,31 @@ client.on('loggedOn', () => {
 
 // Friend Chat
 client.on('friendMessage', function(steamID, message) {
-    console.log("Message from " + steamID.getSteamID64() + ": " + message);
+	client.getPersonas([steamID], function(personas) {
+		var persona = personas[steamID];
+		var name = persona ? persona.player_name : ("[" + steamID + "]");
+
+		console.log("Message from " + name + ": " + message);
+	});
+
     if( findCmd( message ) ) {
     	cmdList[getCmd( message )][2]( steamID );
     }else{
-    	if( typeof steambot != 'undefined' ) {
-	    	steambot.ask( message , function (err, response) {
-	    		console.log( "Responded: "+response )
-			  	client.chatMessage( steamID, response )
-			});
-	    };
+    	cleverBotResp( steamID, message );
     };
+
 });
 
 // Room Functions
 client.on('chatMessage', function( room, chatter, message ) {
-	console.log( room );
-	if( room == botChatID ) {
-		if( chatter == botChatAdminID ) {
-			console.log( "Admin chatted." )
-		};
-	};
+	cleverBotResp( room, message );
 });
 
 client.on('chatUserJoined', function( chatID, userID ) {
-	client.chatMessage( chatID, idToName( client, userID)+" joined the chat room." );
-});
+	client.getPersonas([userID], function(personas) {
+		var persona = personas[userID];
+		var name = persona ? persona.player_name : ("[" + userID + "]");
 
-client.on('chatUserLeft', function( chatID, userID ) {
-
+		client.chatMessage( chatID, "Welcome "+name+"!" );
+	});
 });
